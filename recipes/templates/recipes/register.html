@@ -1,0 +1,32 @@
+{% extends "recipes/base.html" %}
+{% load static %}
+
+{% block links %}
+    <!--These are all the links that are used for this specific template-->
+    <link rel="stylesheet" type="text/css" href="{% static 'recipes/login_sign.css' %}">
+{% endblock %}
+
+{% block content %}
+    <!--This is all the code for the main page for this specific template-->
+    <div class="container">
+        <div class="forms">
+            <div class="form signup">
+                <span class="title">Registration</span>
+                <!--This will display all the necessary form fields from the form class to register a new user-->
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_div }}
+                    <!--This will create the new user-->
+                    <button type="submit" class="submit-button">Register</button>
+                </form>
+                <!--Login Link to Login Page-->
+                <div class="login-signup">
+                    <span class="text">Already a member?
+                        <!--This will take the suer to the login page if they already have an account-->
+                        <a href="{% url 'user_login' %}" class="login-link">Login Now</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

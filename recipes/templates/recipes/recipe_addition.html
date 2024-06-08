@@ -1,0 +1,167 @@
+{% extends "recipes/base.html" %}
+{% load static %}
+
+{% block links %}
+    <!--These are all the links that are used for this specific template-->
+    <link rel="stylesheet" type="text/css" href="{% static 'recipes/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+    <!--This is all the code for the main page for this specific template-->
+        <div class="base-container">
+            <h2>Add your Recipe below</h2>
+            <!--This will display all the fields the user will need to enter when they create a recipe on the website-->
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_title">Enter the Title of the Recipe:</label>
+                    {{ form.title }}
+                </div>
+                <div class="form-group">
+                    <label for="id_category">Select the Category of the Recipe:</label>
+                    {{ form.category }}
+                </div>
+                <div class="form-group">
+                    <label for="id_dish_description">Enter the Description of the Recipe:</label>
+                    {{ form.dish_description }}
+                </div>
+                <div class="form-group">
+                    <!--This uses the form and javascript when the user has more than one ingredient in their
+                    recipe. It will create a dynamic form field so the user can enter more than one ingredient field-->
+                    <label for="id_ingredients">Enter the Ingredients of the Recipe:</label>
+                    {{ form.ingredients }}
+                    <div id="ingredients-container">
+                        <div class="ingredient-row">
+                            <!--The first ingredient can not be removed and is required-->
+                            <input type="text" class="form-control ingredient-input" name="ingredient" placeholder="Ingredient 1" required/>
+                        </div>
+                    </div>
+                    <!--This calls the javascript to create another input field so the user can enter the information of the other
+                    ingredients-->
+                    <a class="add-ingredient" onclick="addIngredient()">+ Add Another Ingredient</a>
+                </div>
+                <div class="form-group">
+                    <!--This uses the form and javascript when the user has more than one direction in their
+                    recipe. It will create a dynamic form field so the user can enter more than one direction field-->
+                    <label for="id_directions">Enter the Directions of the Recipe:</label>
+                    {{ form.directions }}
+                    <div id="directions-container">
+                        <div class="direction-row">
+                            <!--The first direction can not be removed and is required-->
+                            <textarea class="form-control direction-input" name="direction" placeholder="Step 1" required></textarea>
+                        </div>
+                    </div>
+                    <!--This calls the javascript to create another input field so the user can enter the information of the other
+                    ingredients-->
+                    <a class="add-direction" onclick="addDirection()">+ Add Another Step</a>
+                </div>
+                <div class="form-group">
+                    <!--This is where the user will upload the image file of the recipe-->
+                    <label for="id_food_image">Upload the image of the Recipe Output:(JPEG, PNG, or JPG)</label>
+                    {{ form.food_image }}
+                </div>
+                <div class="form-group">
+                    <label for="id_food_image">Enter the Serving amount:</label>
+                    {{ form.servings }}
+                </div>
+                <div class="form-group">
+                    <label for="id_food_image">How long will it take to prep:</label>
+                    {{ form.prep_time_value }}
+                    {{ form.prep_time_unit }}
+                </div>
+                <div class="form-group">
+                    <label for="id_food_image">How long will it take to cook:</label>
+                    {{ form.cook_time_value }}
+                    {{ form.cook_time_unit }}
+                </div>
+                <div class="form-group">
+                    <label for="id_tips">Enter any Tips for making this Recipe:</label>
+                    {{ form.tips }}
+                </div>
+                <!--This will upload the recipe if all the required fields are filled in-->
+                <button type="submit" class="create-recipe">Upload Your Recipe</button>
+                <!--This will take the user back to the previous page they were on-->
+                <button class="create-recipe" onclick="window.history.back()" type="button">Go back</button>
+            </form>
+        </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        /*this sets the intial counter for the placeholder for the dynamic form fields so the user can keep track of
+        * how many fields they have added*/
+        let ingredientCounter = 1;
+        let directionCounter = 1;
+
+        function addIngredient() {
+            /*This creates the ingredient field when the javascript is called in the HTML*/
+            const container = document.getElementById('ingredients-container');
+            const newIngredient = document.createElement('div');
+            newIngredient.className = 'ingredient-row';
+            newIngredient.innerHTML = `
+                <input type="text" class="form-control ingredient-input" name="ingredient" placeholder="Ingredient ${ingredientCounter}" required autofocus/>
+                <button type="button" class="btn btn-danger remove-btn" onclick="removeIngredient(this)">X</button>
+            `;
+            /*There is also a remove button incase the user clicked the add button by accident*/
+            container.appendChild(newIngredient);
+            ingredientCounter++;
+            /*This updates the counter and updates the placeholders so the count is the same*/
+            updatePlaceholders('ingredient', 'Ingredient');
+        }
+
+        function removeIngredient(element) {
+            /*This removes the field if the user added too many fields*/
+            element.parentElement.remove();
+            updatePlaceholders('ingredient', 'Ingredient');
+        }
+
+        function addDirection() {
+            /*This creates the directions field when it is called in the HTML*/
+            const container = document.getElementById('directions-container');
+            const newDirection = document.createElement('div');
+            newDirection.className = 'direction-row';
+            newDirection.innerHTML = `
+                <textarea class="form-control direction-input" name="direction" placeholder="Step ${directionCounter}" required autofocus></textarea>
+                <button type="button" class="btn btn-danger remove-btn" onclick="removeDirection(this)">Remove Step</button>
+            `;
+            /*There is also a remove option if the user clicked the add direction by accident*/
+            container.appendChild(newDirection);
+            directionCounter++;
+            /*This will update the counter and the placeholder of the field*/
+            updatePlaceholders('direction', 'Step');
+        }
+
+        function removeDirection(element) {
+            /*This will remove the field if the user wants to remove the additional field*/
+            element.parentElement.remove();
+            updatePlaceholders('direction', 'Step');
+        }
+
+        function updatePlaceholders(inputName, placeholderPrefix) {
+            /*This function is to update the placeholder field so that it keeps consistency of numbering throughout
+            * if the user deletes a field midway. */
+            const inputs = document.querySelectorAll(`input[name="${inputName}"], textarea[name="${inputName}"]`);
+            inputs.forEach((input, index) => {
+                input.placeholder = `${placeholderPrefix} ${index + 1}`;
+            });
+        }
+
+        document.querySelector('form').addEventListener('submit', function (e) {
+            /*This extracts the values from the ingredients into an array and filters out any spaces so that the data
+            * is cleand. */
+            const ingredients = Array.from(document.querySelectorAll('input[name="ingredient"]'))
+                .map(input => input.value)
+                .filter(value => value.trim() !== '');
+            /*This then joins the values together by the unique key */
+            document.querySelector('input[name="ingredients"]').value = ingredients.join('§');
+
+            /*This extracts the values from the directions into an array and filters out any spaces so that the data
+            * is cleand. */
+            const directions = Array.from(document.querySelectorAll('textarea[name="direction"]'))
+                .map(textarea => textarea.value)
+                .filter(value => value.trim() !== '');
+            /*This then joins the values together by the unique key */
+            document.querySelector('input[name="directions"]').value = directions.join('§');
+        });
+    </script>
+{% endblock %}

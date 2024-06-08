@@ -1,0 +1,86 @@
+{% extends "recipes/base.html" %}
+{% load static %}
+
+{% block links %}
+    <!--These are all the links that are used for this specific template-->
+    <link rel="stylesheet" type="text/css" href="{% static 'recipes/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+    <!--This is all the code for the main page for this specific template-->
+    <div class="add-container">
+        <div class="base-container">
+            {% if recipes %}
+                <table class="product-display">
+                    <thead>
+                    <!--This is the header of the table of what will be displayed-->
+                    <tr>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Likes</th>
+                        <th>Created On</th>
+                    </tr>
+                    </thead>
+                    {% for recipe in recipe_pages %}
+                        <!--This will display every recipe the user has uploaded to the website-->
+                        <tr>
+                            <td><img src="{{ recipe.food_image.url }}" height="100" width="100" alt="{{ recipe.title }}"></td>
+                            <td class="product"><a class="recipe-page" href="{% url 'recipe_view' post_id=recipe.id %}">{{ recipe.title|title }}</a></td>
+                            <td class="product">{{ recipe.category|title }}</td>
+                            <td class="product">{{ recipe.total_likes }}</td>
+                            <td class="product">{{ recipe.date_created.date }}</td>
+                            <td>
+                                <!--This will take the user to the edit page to edit the recipe incase they want to make changes-->
+                                <a href="{% url 'edit_recipe' post_id=recipe.id %}" class="editbtn"><i class="fa fa-fw fa-pencil"></i> Edit</a>
+                                <!--This will delete the recipe they no longer want on the website-->
+                                <form method="post" action="{% url 'recipe_delete' recipe.id %}">
+                                    {% csrf_token %}
+                                    <button class="deletebtn" type="submit"><i class="fa fa-fw fa-trash"></i> Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <!--If the amount of recipes the user uploaded is more than 5, the page counter will display
+                so that the user can scroll to the next page to view their recipes-->
+                <div class="page-container">
+                    <!--This is for the previous page-->
+                    {% if recipe_pages.has_other_pages %}
+                        {% if recipe_pages.has_previous %}
+                            <a href="?page={{ recipe_pages.previous_page_number }}"><<</a>
+                        {% else %}
+                            <span class="disabled"><<</span>
+                        {% endif %}
+
+                        {% for i in recipe_pages.paginator.page_range %}
+                            <!--This is for the current page index-->
+                            {% if recipe_pages.number == i %}
+                                <span class="selected-page" href="?page={{ i }}">{{ i }}</span>
+                            {% else %}
+                                <a href="?page={{ i }}">{{ i }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        <!--This is for the next page-->
+                        {% if recipe_pages.has_next %}
+                            <a href="?page={{ recipe_pages.next_page_number }}">>></a>
+                        {% else %}
+                            <span class="disabled">>></span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+            {% else %}
+                <!--If the user has not uploaded any recipes, this message will be displayed-->
+                You don't have any recipes yet.
+                <br>
+                You can upload a recipe on your account page!
+            {% endif %}
+            <!--This will take the user back to the previous page they were on-->
+            <button class="account-info-buttons" onclick="window.history.back()" type="button">Go back</button>
+        </div>
+    </div>
+{% endblock %}
+
+

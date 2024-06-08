@@ -1,0 +1,213 @@
+{% extends "recipes/base.html" %}
+{% load static %}
+
+{% block links %}
+    <!--These are all the links that are used for this specific template-->
+    <link rel="stylesheet" type="text/css" href="{% static 'recipes/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"/>
+{% endblock %}
+
+{% block content %}
+    <!--This is all the code for the main page for this specific template-->
+    <div class="base-container">
+        <div class="recipe-page">
+            <section class="recipe-hero">
+                <!--This will display the image of the specific recipe so the user can view the recipe outcome-->
+                <img src="{{ recipe.food_image.url }}" class="img recipe-hero-img" alt="{{ recipe.title }}"/>
+                <article class="recipe-info">
+                    <!--This will display all the information about the recipe-->
+                    <label class="title-account">{{ recipe.title }}</label>
+                    <div class="recipe-information">
+                        <article>
+                            <label>Created on:</label>
+                            <a>{{ recipe.date_created.date }}</a>
+                        </article>
+                        <!--If the recipe had any changes, the date it was changed, will be displayed. if not it will
+                        remain blank-->
+                        {% if recipe.date_modified %}
+                            <article>
+                                <label>Modified on:</label>
+                                <a>{{ recipe.date_modified.date }}</a>
+                            </article>
+                        {% endif %}
+                        <article>
+                            <label>Created By:</label>
+                            <!--This will take the user to the account view page so the user can view other recipes they have
+                            uploaded-->
+                            <a href="{% url 'user_view' user_id=post_user_id %}">{{ recipe.uploaded_by.get_full_name }}</a>
+                        </article>
+                        <article>
+                            <label>Category:</label>
+                            <a>{{ recipe.category.title }}</a>
+                        </article>
+                    </div>
+                    <p class="about-recipe">{{ recipe.dish_description }}</p>
+                    <div class="recipe-icons">
+                        <!--This displays more information about the recipe-->
+                        <article>
+                            <i class="fa-solid fa-clock"></i>
+                            <label>Prep time</label>
+                            <a>{{ recipe.prep_time }}</a>
+                        </article>
+                        <article>
+                            <i class="fa-regular fa-clock"></i>
+                            <label>Cook time</label>
+                            <a>{{ recipe.cook_time }}</a>
+                        </article>
+                        <article>
+                            <i class="fa-solid fa-users"></i>
+                            <label>Servings</label>
+                            <a>{{ recipe.servings }}</a>
+                        </article>
+                        <article>
+                            <!--This is where the user can like the recipe post. It will check if the user has
+                            already liked the post or not. It will also display all the information regarding on how
+                            many likes this post has-->
+                            <form action="{% url 'like_post' recipe.id %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" style="background:none; border:none; padding:0; cursor:pointer;">
+                                    {% if is_liked %}
+                                        <!--The post was liked already by user-->
+                                        <i class="fa-solid fa-heart" style="color:red;"></i>
+                                    {% else %}
+                                        <!--The post was not liked by the user-->
+                                        <i class="fa-regular fa-heart"></i>
+                                    {% endif %}
+                                </button>
+                            </form>
+                            <br>
+                            <a>{{ recipe.total_likes }} likes</a>
+                        </article>
+                    </div>
+                </article>
+            </section>
+            <div class="seperator"></div>
+            <!-- content -->
+            <section class="recipe-content">
+                <article>
+                    <!--This displays the directions of the recipe-->
+                    <h4>Instructions</h4>
+                    {% for direction in directions %}
+                        <div class="single-instruction">
+                            <header>
+                                <p>Step {{ forloop.counter }}</p>
+                                <div></div>
+                            </header>
+                            <p>{{ direction }}</p>
+                        </div>
+                    {% endfor %}
+                </article>
+                <article class="second-column">
+                    <div>
+                        <!--This displays all the ingredients in the recipe-->
+                        <h4>Ingredients</h4>
+                        {% for ingredient in ingredients %}
+                            <p class="single-ingredient">{{ ingredient }}</p>
+                        {% endfor %}
+                    </div>
+                    <!--If the user has provided any tips in the recipe, it will be displayed here
+                    if not it will remain blank-->
+                    {% if recipe.tips %}
+                        <div>
+                            <h4>Tips</h4>
+                            <p>{{ recipe.tips }}</p>
+                        </div>
+                    {% endif %}
+                </article>
+            </section>
+            <div class="seperator"></div>
+            <div class="counter">
+                <div class="row">
+                    <div class="account-button-container">
+                        <div class="count-data text-center">
+                            <!--This is where all the comments users have posted about the recipe will be displayed.-->
+                            {% if comments %}
+                                {% for comment in comments %}
+                                    <div class="user-comment">
+                                        <!--The user who commented will be here and a link to their profile as well-->
+                                        <a class="comment-author"
+                                           href="{% url 'user_view' user_id=comment.author.id %}">{{ comment.author.get_full_name }}</a>
+                                        <label class="comment-author">commented</label>
+                                        <br>
+                                        <label class="comment-date">on {{ comment.created_on.date }}
+                                            at {{ comment.created_on.time }}</label>
+                                        <p>{{ comment.body }}</p>
+                                        <!--If it is the user who created the post, or the user who commented, or the admin account.
+                                        They will be able to remove the comment. However, the user who created the comment can only
+                                        remove their comment and not other. While the admin and the user who created the post can delete
+                                        any comment-->
+                                        {% if comment.author.id == user.id or recipe.uploaded_by.id == user.id or user.is_superuser %}
+                                            <form method="post" action="{% url 'delete_comment' comment.id %}">
+                                                {% csrf_token %}
+                                                <button class="btn btn-danger remove-btn" type="submit">Delete Comment</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                    <div class="seperator"></div>
+                                {% endfor %}
+                                <!--If there are no comments yet on the recipe post, the following message will be displayed-->
+                            {% else %}
+                                <p>There are no comments on this post yet</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!--if the recipe post has more than 5 comments, it will create the page container so the user
+                    can go to the next page of comments to view all the comments-->
+                    <div class="page-container">
+                        <!--This is for the previous page button-->
+                        {% if comments.has_other_pages %}
+                            {% if comments.has_previous %}
+                                <a href="?page={{ comments.previous_page_number }}"><<</a>
+                            {% else %}
+                                <span class="disabled"><<</span>
+                            {% endif %}
+
+                            <!--This is for the current page index-->
+                            {% for i in comments.paginator.page_range %}
+                                {% if comments.number == i %}
+                                    <span class="selected-page" href="?page={{ i }}">{{ i }}</span>
+                                {% else %}
+                                    <a href="?page={{ i }}">{{ i }}</a>
+                                {% endif %}
+                            {% endfor %}
+
+                            <!--This is for the next page button-->
+                            {% if comments.has_next %}
+                                <a href="?page={{ comments.next_page_number }}">>></a>
+                            {% else %}
+                                <span class="disabled">>></span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <!--This is where the user will be able to upload their own comment-->
+                    <div class="account-button-container">
+                        <div class="count-data text-center">
+                            <!--If the user is logged in they will be able to comment and upload their own comment-->
+                            {% if user.is_authenticated %}
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label for="id_body">Add a Comment:</label>
+                                        {{ form.body }}
+                                    </div>
+                                    <!--This will upload the comment-->
+                                    <button class="account-info-buttons" type="submit">Add Comment</button>
+                                </form>
+                                <!--This will take the user to the edit page for the recipe if they spot a mistake on the recipe post.
+                                it is only visible to the user who created the post or the admin account-->
+                                {% if user.is_superuser or recipe.uploaded_by == user %}
+                                    <button onclick="window.location.href='{% url 'edit_recipe' recipe.id %}'" class="account-info-buttons" type="button"> Edit</button>
+                                {% endif %}
+                                <!--This will take the user back to the previous page they were on-->
+                                <button class="account-info-buttons" onclick="window.history.back()" type="button">Go back</button>
+                                <!--If the user is not logged in, they will only see the login button which will take them to the login page-->
+                            {% else %}
+                                <button class="account-info-buttons" onclick="window.location.href='{% url 'user_login' %}'" type="button">Login To Comment</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

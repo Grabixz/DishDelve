@@ -1,0 +1,88 @@
+{% extends "recipes/base.html" %}
+{% load static %}
+
+{% block links %}
+    <!--These are all the links that are used for this specific template-->
+    <link rel="stylesheet" type="text/css" href="{% static 'recipes/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+    <!--This is all the code for the main page for this specific template-->
+    <div class="add-container">
+        <div class="base-container">
+            {% if liked_recipes %}
+                <table class="product-display">
+                    <thead>
+                    <tr>
+                        <!--This is the tables header-->
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Likes</th>
+                        <th>Created On</th>
+                    </tr>
+                    </thead>
+                    <!--This will loop through each recipe in the result set for recipes the user liked-->
+                    {% for recipe in liked_recipes %}
+                        <tr>
+                            <td><img src="{{ recipe.recipe_post.food_image.url }}" height="100" width="100"
+                                     alt="{{ recipe.recipe_post.title }}"></td>
+                            <td class="product"><a class="recipe-page"
+                                                   href="{% url 'recipe_view' post_id=recipe.id %}">{{ recipe.recipe_post.title|title }}</a>
+                            </td>
+                            <td class="product">{{ recipe.recipe_post.category|title }}</td>
+                            <td class="product">{{ recipe.recipe_post.total_likes }}</td>
+                            <td class="product">{{ recipe.recipe_post.date_created.date }}</td>
+                            <td>
+                                <!--This will take the user to the view page to view the recipe they liked-->
+                                <a href="{% url 'recipe_view' post_id=recipe.recipe_post.id %}" class="editbtn">View</a>
+                                <!--If the user is admin, they will be able to delete the recipe-->
+                                {% if user.is_superuser %}
+                                    <form method="post" action="{% url 'recipe_delete' recipe.id %}">
+                                        {% csrf_token %}
+                                        <button class="deletebtn" type="submit"><i class="fa fa-fw fa-trash"></i> Remove</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <!--If the user liked more than 5 recipes, the page container will be displayed
+                so the user can go to the next page to view their recipes they liked-->
+                <div class="page-container">
+                    <!--This is for the previous page button-->
+                    {% if liked_recipes.has_other_pages %}
+                        {% if liked_recipes.has_previous %}
+                            <a href="?page={{ liked_recipes.previous_page_number }}"><<</a>
+                        {% else %}
+                            <span class="disabled"><<</span>
+                        {% endif %}
+
+                        <!--This is for the current index page-->
+                        {% for i in liked_recipes.paginator.page_range %}
+                            {% if liked_recipes.number == i %}
+                                <span class="selected-page" href="?page={{ i }}">{{ i }}</span>
+                            {% else %}
+                                <a href="?page={{ i }}">{{ i }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        <!--This is for the next page button-->
+                        {% if liked_recipes.has_next %}
+                            <a href="?page={{ liked_recipes.next_page_number }}">>></a>
+                        {% else %}
+                            <span class="disabled">>></span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            <!--If the user has not liked any recipes, the following message will be displayed-->
+            {% else %}
+                You haven't liked any recipes yet.
+                <br>
+                You can view recipes and like them and they will all be here.
+            {% endif %}
+            <!--This will take the user back to the previous page they were on-->
+            <button class="account-info-buttons" onclick="window.history.back()" type="button">Go back</button>
+        </div>
+    </div>
+{% endblock %}

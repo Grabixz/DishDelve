@@ -1,0 +1,86 @@
+{% extends "recipes/base.html" %}
+{% load static %}
+
+{% block links %}
+    <!--These are all the links that are used for this specific template-->
+    <link rel="stylesheet" type="text/css" href="{% static 'recipes/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+    <!--This is all the code for the main page for this specific template-->
+    <div class="add-container">
+        <div class="base-container">
+            {% if recipes %}
+                <table class="product-display">
+                    <thead>
+                    <tr>
+                        <!--This is the tables header-->
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Likes</th>
+                        <th>Created On</th>
+                    </tr>
+                    </thead>
+                    <!--This will loop through each recipe that matches the specific category that is selected-->
+                    {% for recipe in recipes %}
+                        <tr>
+                            <td><img src="{{ recipe.food_image.url }}" height="100" width="100"
+                                     alt="{{ recipe.title }}"></td>
+                            <td class="product"><a class="recipe-page"
+                                                   href="{% url 'recipe_view' post_id=recipe.id %}">{{ recipe.title|title }}</a>
+                            </td>
+                            <td class="product">{{ recipe.category|title }}</td>
+                            <td class="product">{{ recipe.total_likes }}</td>
+                            <td class="product">{{ recipe.date_created.date }}</td>
+                            <td>
+                                <!--This will take the user to the page where they can view the recipe they want to view-->
+                                <a href="{% url 'recipe_view' post_id=recipe.id %}" class="editbtn">View</a>
+                                <!--This will delete the recipe they no longer want on the website-->
+                                <form method="post" action="{% url 'recipe_delete' recipe.id %}">
+                                    {% csrf_token %}
+                                    <button class="deletebtn" type="submit"><i class="fa fa-fw fa-trash"></i> Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <!--If the category has more than 5 recipes, it will create the page indicator
+                so that the user can scroll through the recipes-->
+                <div class="page-container">
+                    <!--This is for the previous page button-->
+                    {% if recipes.has_other_pages %}
+                        {% if recipes.has_previous %}
+                            <a href="?page={{ recipes.previous_page_number }}"><<</a>
+                        {% else %}
+                            <span class="disabled"><<</span>
+                        {% endif %}
+
+                        <!--This is for the current page index-->
+                        {% for i in recipes.paginator.page_range %}
+                            {% if recipes.number == i %}
+                                <span class="selected-page" href="?page={{ i }}">{{ i }}</span>
+                            {% else %}
+                                <a href="?page={{ i }}">{{ i }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        <!--This is for the next page button-->
+                        {% if recipes.has_next %}
+                            <a href="?page={{ recipes.next_page_number }}">>></a>
+                        {% else %}
+                            <span class="disabled">>></span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <!--If the specific category has not recipes, the following message will be displayed-->
+            {% else %}
+                This category currently doesn't have any recipes...
+                <br>
+                Come back again to check if any recipes are added here.
+            {% endif %}
+            <!--This will take the user back to the previous page they were on-->
+            <button class="account-info-buttons" onclick="window.history.back()" type="button">Go back</button>
+        </div>
+    </div>
+{% endblock %}

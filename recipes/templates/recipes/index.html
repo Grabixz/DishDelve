@@ -1,0 +1,205 @@
+{% extends "recipes/base.html" %}
+{% load static %}
+
+{% block links %}
+    <!--These are all the links that are used for this specific template-->
+    <link rel="stylesheet" type="text/css" href="{% static 'recipes/styles.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'recipes/lightslider.css' %}">
+    <script type="text/javascript" src="{% static 'recipes/jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'recipes/lightslider.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <!--This is all the code for the main page for this specific template-->
+    <div class="cat-container">
+        <!--This will take the user to the category page for Breakfast-->
+        <div class="catbox" onclick="window.location.href='{% url 'category_view' 'breakfast' %}'">
+            <div class="cat-type">
+                <a class="cat-link"><i class="fa-solid fa-mug-hot"></i> Breakfast</a>
+            </div>
+        </div>
+        <div class="catbox" onclick="window.location.href='{% url 'category_view' 'snacks' %}'">
+            <!--This will take the user to the category page for Snacks-->
+            <div class="cat-type">
+                <a class="cat-link"><i class="fa-solid fa-apple-whole"></i> Snacks</a>
+            </div>
+        </div>
+        <div class="catbox" onclick="window.location.href='{% url 'category_view' 'lunch' %}'">
+            <!--This will take the user to the category page for Lunch-->
+            <div class="cat-type">
+                <a class="cat-link"><i class="fa-solid fa-drumstick-bite"></i> Lunch</a>
+            </div>
+        </div>
+        <div class="catbox" onclick="window.location.href='{% url 'category_view' 'dinner' %}'">
+            <!--This will take the user to the category page for Dinner-->
+            <div class="cat-type">
+                <a class="drop-link"><i class="fa-solid fa-utensils"></i> Dinner</a>
+            </div>
+        </div>
+        <div class="catbox" onclick="window.location.href='{% url 'category_view' 'dessert' %}'">
+            <!--This will take the user to the category page for Dessert-->
+            <div class="cat-type">
+                <a class="drop-link"><i class="fa-solid fa-ice-cream"></i> Dessert</a>
+            </div>
+        </div>
+    </div>
+    <br>
+    <label class="title">Recently Added Recipes</label>
+    <ul id="autoWidth" class="cs-hidden">
+        {% for recipe in recipes %}
+            <!--This displays each container of recently added recipes on the home page-->
+            <li class="item">
+                <div class="recipe_box">
+                    <!--This will display the recipe image-->
+                    <div class="recipe_image">
+                        <img src="{{ recipe.food_image.url }}" alt="{{ recipe.title }}">
+                        <!--This adds an overlay with the "View Recipe" button so the user can view more information about the recipe-->
+                        <div class="rec-overlay">
+                            <a href="{% url 'recipe_view' post_id=recipe.id %}" class="view_button">View Recipe</a>
+                        </div>
+                    </div>
+                    <!--This displays the recipe title-->
+                    <div class="rec-name">
+                        <a>{{ recipe.title }}</a>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+    <br>
+    <!--This displays a random featured recipe-->
+    <div class="featured-container">
+        <section class="featured-recipe-hero">
+            <!--This displays the recipe image-->
+            <img src="{{ first_random_recipe.food_image.url }}" class="img recipe-hero-img"
+                 alt="{{ first_random_recipe.title }}"/>
+            <article class="recipe-info">
+                <!--This displays the recipes information-->
+                <label class="title-account">{{ first_random_recipe.title }}</label>
+                <div class="recipe-information">
+                    <article>
+                        <label>Created on:</label>
+                        <a>{{ first_random_recipe.date_created.date }}</a>
+                    </article>
+                    {% if first_random_recipe.date_modified %}
+                        <article>
+                            <label>Modified on:</label>
+                            <a>{{ first_random_recipe.date_modified.date }}</a>
+                        </article>
+                    {% endif %}
+                    <article>
+                        <label>Created By:</label>
+                        <!--This will take the user to the user who created the recipe-->
+                        <a href="{% url 'user_view' user_id=first_random_recipe.uploaded_by.id %}">{{ first_random_recipe.uploaded_by.get_full_name }}</a>
+                    </article>
+                    <article>
+                        <label>Category:</label>
+                        <a>{{ first_random_recipe.category.title }}</a>
+                    </article>
+                </div>
+                <p class="about-recipe">{{ first_random_recipe.dish_description }}</p>
+                <div class="view-recipe">
+                    <!--This will take the user to view the recipe to see more information about it-->
+                    <a href="{% url 'recipe_view' post_id=first_random_recipe.id %}">View</a>
+                </div>
+            </article>
+        </section>
+    </div>
+    <br>
+    <!--This displays a random featured recipe-->
+    <div class="featured-container">
+        <section class="featured-recipe-hero">
+            <article class="recipe-info">
+                <!--This displays the recipes information-->
+                <label class="title-account">{{ second_random_recipe.title }}</label>
+                <div class="recipe-information">
+                    <article>
+                        <label>Created on:</label>
+                        <a>{{ second_random_recipe.date_created.date }}</a>
+                    </article>
+                    {% if second_random_recipe.date_modified %}
+                        <article>
+                            <label>Modified on:</label>
+                            <a>{{ second_random_recipe.date_modified.date }}</a>
+                        </article>
+                    {% endif %}
+                    <article>
+                        <label>Created By:</label>
+                        <!--This will take the user to the user who created the recipe-->
+                        <a href="{% url 'user_view' user_id=second_random_recipe.uploaded_by.id %}">{{ second_random_recipe.uploaded_by.get_full_name }}</a>
+                    </article>
+                    <article>
+                        <label>Category:</label>
+                        <a>{{ second_random_recipe.category.title }}</a>
+                    </article>
+                </div>
+                <p class="about-recipe">{{ second_random_recipe.dish_description }}</p>
+                <div class="view-recipe">
+                    <!--This will take the user to view the recipe to see more information about it-->
+                    <a href="{% url 'recipe_view' post_id=second_random_recipe.id %}">View</a>
+                </div>
+            </article>
+            <!--This displays the recipe image-->
+            <img src="{{ second_random_recipe.food_image.url }}" class="img recipe-hero-img"
+                 alt="{{ second_random_recipe.title }}"/>
+        </section>
+    </div>
+    <br>
+    <label class="title">Most Liked Recipes</label>
+    <ul id="mostLiked" class="cs-hidden">
+        {% for recipe in top_liked_recipes %}
+             <!--This displays each container of most liked recipes on the home page-->
+            <li class="item">
+                <div class="recipe_box">
+                    <!--This will display the recipe image-->
+                    <div class="recipe_image">
+                        <img src="{{ recipe.food_image.url }}" alt="{{ recipe.title }}">
+                            <!--This adds an overlay with the "View Recipe" button so the user can view more information about the recipe-->                        <div class="rec-overlay">
+                            <a href="{% url 'recipe_view' post_id=recipe.id %}" class="view_button">View Recipe</a>
+                        </div>
+                    </div>
+                    <!--This displays the recipe title-->
+                    <div class="rec-name">
+                        <a>{{ recipe.title }}</a>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+{#          This is the javascript code for the slider for recently added recipes, it adds the feature#}
+{#          to scroll before the recipes containers as a card view#}
+            $(document).ready(function () {
+                $('#autoWidth').lightSlider({
+                    autoWidth: true,
+                    loop: true,
+                    onSliderLoad: function () {
+                        $('#autoWidth').removeClass('cS-hidden');
+                    }
+                });
+            });
+            {#This is the javascript code for the slider for most liked recipes, it adds the feature#}
+            {#to scroll before the recipes containers as a card view#}
+            $(document).ready(function () {
+                $('#mostLiked').lightSlider({
+                    autoWidth: true,
+                    loop: true,
+                    onSliderLoad: function () {
+                        $('#mostLiked').removeClass('cS-hidden');
+                    }
+                });
+            });
+            $(document).ready(function() {
+                // This is to go through the sliders every 5 seconds
+                function clickNextButton() {
+                    $('.lSNext').click();
+                }
+                clickNextButton();
+                setInterval(clickNextButton, 5000);
+            });
+    </script>
+{% endblock %}
+

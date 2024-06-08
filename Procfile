@@ -1,0 +1,1 @@
+web: gunicorn DishDelveWebsite.wsgi --log-file -

@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--This is the base head for the website for every page-->
+    <meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dish Delve</title>
+    <link rel="icon" href="{% static 'recipes/website_logo.png' %}" type="image/icon type">
+    <script src="https://kit.fontawesome.com/2c0dd2c479.js" crossorigin="anonymous"></script>
+    <script src="{% static 'recipes/script.js' %}"></script>
+    {% block links %}
+        <!--This contains the specific links each page needs for any page-->
+    {% endblock %}
+
+</head>
+<body>
+    <!--This contains the navbar for each page as it will remain the same for each page-->
+    <input id="navbar-indicator" class="navbar-collapse" type="checkbox" checked>
+    <nav class="navbar">
+        <a class="navbar-logo" href="{% url 'blog_index' %}">DishDelve</a>
+        <div class="navbar-buttons">
+            <!--The navbar changes if the user is logged in or logged out-->
+            <a href="{% url 'search_recipe' %}" class="nav-link"><i class="fa fa-fw fa-search"></i> Search</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'liked_recipes' %}" class="nav-link"><i class="fa-solid fa-heart"></i> Liked Recipes</a>
+                <a href="{% url 'recipe_creation' %}" class="nav-link"><i class="fa-solid fa-circle-plus"></i> Create Recipe</a>
+                <a href="{% url 'account_information' %}" class="nav-link"><i class="fa fa-fw fa-user-circle"></i> Account</a>
+            {% else %}
+                <a href="{% url 'user_login' %}" class="nav-link"><i class="fa fa-fw fa-user-circle"></i> Login</a>
+            {% endif %}
+        </div>
+        <!--This displays the navbar burger when the website is on a mobile device-->
+        <label class="navbar-toggler" for="navbar-indicator"><i class="fa fa-fw fa-navicon fa-lg"></i></label>
+    </nav>
+    <main>
+        {% block content %}
+            <!--This contains the specific page content that needs to be displayed-->
+        {% endblock %}
+    </main>
+    <footer>
+        <!--This is the footer of the webpage and is the same for everypage-->
+        <div class="content">
+            <div class="top">
+                <div class="logo-details">
+                    <span class="logo-name">Dish Delve</span>
+                </div>
+                <div class="media-icons">
+                    <!--This takes the user to a new tab with the social link-->
+                    <a href="https://www.instagram.com/" target="_blank"><i class="fa fa-fw fa-instagram"></i></a>
+                    <a href="https://za.pinterest.com/" target="_blank"><i class="fa-brands fa-pinterest"></i></a>
+                    <a href="https://www.tiktok.com/" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="https://twitter.com/?lang=en" target="_blank"><i class="fa-brands fa-x-twitter"></i></a>
+                </div>
+            </div>
+            <div class="bottom-details">
+                <div class="bottom-text">
+                    <span class="copy-text">Copyright @ 2024 <a>DishDelve.</a>All rights reserverd</span>
+                    <span class="policy-term">
+                        <a>Privacy Policy</a>
+                        <a>Terms & Condition</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!--This is to display the error/successful message pop up when the user has completed something-->
+    <script id="django-messages" type="application/json">
+        {% if messages %}
+            [
+                {% for message in messages %}
+                    {"message": "{{ message|escapejs }}", "level": "{{ message.level_tag }}"}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ]
+        {% else %}
+            []
+        {% endif %}
+    </script>
+    {% block script %}
+        <!--This is where all the javascript is used for a specific page-->
+    {% endblock %}
+</body>
+</html>
