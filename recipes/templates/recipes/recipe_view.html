@@ -204,6 +204,7 @@
                             {% else %}
                                 <button class="account-info-buttons" onclick="window.location.href='{% url 'user_login' %}'" type="button">Login To Comment</button>
                             {% endif %}
+                            <button onclick="window.location.href='{% url 'generate_recipe_pdf' recipe.id %}'" class="account-info-buttons" type="button">Download PDF</button>
                         </div>
                     </div>
                 </div>

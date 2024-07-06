@@ -131,7 +131,7 @@ class RecipeCreationForm(forms.ModelForm):
                   'servings', 'tips']
         widgets = {
             # It then creates the following form fields and declares the following attributes for the fields
-            'title': forms.TextInput(attrs={'class': 'form-control', 'maxlength': 60}),
+            'title': forms.TextInput(attrs={'class': 'form-control', 'maxlength': 50}),
             'category': forms.Select(choices=[
                 ('breakfast', 'Breakfast'),
                 ('snacks', 'Snacks'),
@@ -139,7 +139,7 @@ class RecipeCreationForm(forms.ModelForm):
                 ('dinner', 'Dinner'),
                 ('dessert', 'Dessert')
             ], attrs={'class': 'form-control'}),
-            'dish_description': forms.Textarea(attrs={'class': 'form-control'}),
+            'dish_description': forms.Textarea(attrs={'class': 'form-control', 'maxlength': 280}),
             'ingredients': forms.HiddenInput(attrs={'class': 'form-control'}),
             'directions': forms.HiddenInput(attrs={'class': 'form-control'}),
             'food_image': forms.FileInput(attrs={'class': 'form-control'}),
@@ -215,7 +215,8 @@ class SearchForm(forms.Form):
     # This is the form that will be used when the user wants to search for a recipe post
     search_value = forms.CharField(
         label='Search Recipe Title',
-        max_length=100,
+        error_messages={'required': ' '},
+        max_length=50,
         widget=forms.TextInput(attrs={'autofocus': True, 'class': 'form-control'})
     )
 

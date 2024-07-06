@@ -17,7 +17,8 @@ from .views import (
     ViewUserView,
     DeleteCommentView,
     CategoryView,
-    RecipeDeleteView
+    RecipeDeleteView,
+    generate_recipe_pdf
 )
 from django.contrib.auth.views import LogoutView
 
@@ -32,7 +33,7 @@ urlpatterns = [
 
       # Account management
       path('account-information/', AccountInformationView.as_view(), name='account_information'),
-      path('edit-account-information/', EditAccountInformationView.as_view(),name='edit_account_information'),
+      path('edit-account-information/', EditAccountInformationView.as_view(), name='edit_account_information'),
       path('account-recipes/', AccountRecipesView.as_view(), name='account_recipes'),
       path('liked-recipes/', LikedRecipesView.as_view(), name='liked_recipes'),
 
@@ -44,7 +45,8 @@ urlpatterns = [
 
       # Recipe interaction
       path('post/<int:post_id>/like/', LikePostView.as_view(), name='like_post'),
-      path('comment/delete/<int:comment_id>/', DeleteCommentView.as_view(), name='delete_comment'),
+        path('comment/delete/<int:comment_id>/', DeleteCommentView.as_view(), name='delete_comment'),
+        path('recipe/<int:recipe_id>/pdf/', generate_recipe_pdf, name='generate_recipe_pdf'),
 
       # Search and category view
       path('search-recipe/', RecipeSearchView.as_view(), name='search_recipe'),

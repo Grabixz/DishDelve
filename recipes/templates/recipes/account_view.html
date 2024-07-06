@@ -17,10 +17,10 @@
                     <div class="about-text go-to">
                         <!--This is the user information that will be displayed when another user views
                         their account-->
-                        <label class="title-account">{{ user.first_name|title }} {{ user.last_name|title }}</label>
-                        <label class="sub-title-account">They joined us on {{ user.date_joined.date }}</label>
-                        {% if user.bio %}
-                            <p>{{ user.bio }}</p>
+                        <label class="title-account">{{ user_profile.first_name|title }} {{ user_profile.last_name|title }}</label>
+                        <label class="sub-title-account">They joined us on {{ user_profile.date_joined.date }}</label>
+                        {% if user_profile.bio %}
+                            <p>{{ user_profile.bio }}</p>
                         {% else %}
                             <p>This user currently doesn't have a bio at the moment.</p>
                         {% endif %}
@@ -28,15 +28,15 @@
                             <div class="col-md-6">
                                 <div class="media">
                                     <label>Birthday</label>
-                                    <p>{{ user.date_of_birth }}</p>
+                                    <p>{{ user_profile.date_of_birth }}</p>
                                 </div>
                                 <div class="media">
                                     <label>Gender</label>
-                                    <p>{{ user.gender }}</p>
+                                    <p>{{ user_profile.gender }}</p>
                                 </div>
                                 <div class="media">
                                     <label>Country</label>
-                                    <p>{{ user.country }}</p>
+                                    <p>{{ user_profile.country }}</p>
                                 </div>
                             </div>
                         </div>
@@ -44,7 +44,13 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="about-avatar">
-                        <img class="account-profile-image" src="{{ user.profile_picture.url }}" alt="Profile Picture">
+                        {% if user_profile.profile_picture %}
+                            <!--If the user has uploaded a profile picture, their picture will be displayed-->
+                            <img class="account-profile-image" src="{{ user_profile.profile_picture.url }}" alt="Profile Picture">
+                        {% else %}
+                            <!--If the user has not uploaded a profile picture, the default profile picture will be displayed-->
+                            <img class="account-profile-image" src="{% static 'recipes/default-profile-picture.png' %}" alt="Profile Picture">
+                        {% endif %}
                     </div>
                 </div>
             </div>

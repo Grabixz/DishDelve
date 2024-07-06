@@ -28,7 +28,7 @@
                             <td><img src="{{ recipe.recipe_post.food_image.url }}" height="100" width="100"
                                      alt="{{ recipe.recipe_post.title }}"></td>
                             <td class="product"><a class="recipe-page"
-                                                   href="{% url 'recipe_view' post_id=recipe.id %}">{{ recipe.recipe_post.title|title }}</a>
+                                                   href="{% url 'recipe_view' post_id=recipe.recipe_post.id %}">{{ recipe.recipe_post.title|title }}</a>
                             </td>
                             <td class="product">{{ recipe.recipe_post.category|title }}</td>
                             <td class="product">{{ recipe.recipe_post.total_likes }}</td>
@@ -38,7 +38,7 @@
                                 <a href="{% url 'recipe_view' post_id=recipe.recipe_post.id %}" class="editbtn">View</a>
                                 <!--If the user is admin, they will be able to delete the recipe-->
                                 {% if user.is_superuser %}
-                                    <form method="post" action="{% url 'recipe_delete' recipe.id %}">
+                                    <form method="post" action="{% url 'recipe_delete' recipe.recipe_post.id %}">
                                         {% csrf_token %}
                                         <button class="deletebtn" type="submit"><i class="fa fa-fw fa-trash"></i> Remove</button>
                                     </form>

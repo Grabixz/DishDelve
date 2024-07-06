@@ -37,10 +37,12 @@
                                 <!--This will take the user to the page where they can view the recipe they want to view-->
                                 <a href="{% url 'recipe_view' post_id=recipe.id %}" class="editbtn">View</a>
                                 <!--This will delete the recipe they no longer want on the website-->
-                                <form method="post" action="{% url 'recipe_delete' recipe.id %}">
-                                    {% csrf_token %}
-                                    <button class="deletebtn" type="submit"><i class="fa fa-fw fa-trash"></i> Remove</button>
-                                </form>
+                                {% if user.is_superuser %}
+                                    <form method="post" action="{% url 'recipe_delete' recipe.id %}">
+                                        {% csrf_token %}
+                                        <button class="deletebtn" type="submit"><i class="fa fa-fw fa-trash"></i> Remove</button>
+                                    </form>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}

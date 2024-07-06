@@ -53,7 +53,13 @@
                     <div class="about-avatar">
                         <!--This displays the user's profile image. The default image is the chef image, but they
                         can upload their own image as well-->
-                        <img class="account-profile-image" src="{{ user.profile_picture.url }}" alt="Profile Picture">
+                        {% if user.profile_picture %}
+                            <!--If the user has uploaded a profile picture, their picture will be displayed-->
+                            <img class="account-profile-image" src="{{ user.profile_picture.url }}" alt="Profile Picture">
+                        {% else %}
+                            <!--If the user has not uploaded a profile picture, the default profile picture will be displayed-->
+                            <img class="account-profile-image" src="{% static 'recipes/default-profile-picture.png' %}" alt="Profile Picture">
+                        {% endif %}
                     </div>
                 </div>
             </div>
